@@ -7,7 +7,7 @@ services:
         read_only: true
         tmpfs:
           - /tmp
-          - /var/cache/nginx/client_temp
+          - /var/cache/nginx/*
           - /run/lock
         ports:
             - "8123:80"
@@ -17,7 +17,7 @@ services:
             - php-fpm
     php-fpm:
         image: mww-php
-        build: ./php/
+        build: ../php/
         read_only: true
         volumes:
             - ../app/uploads:/app/uploads:rw
