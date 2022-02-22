@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+    web:
+        image: mww-nginx
+        read_only: true
+        ports:
+            - "8123:80"
+        volumes:
+            - ../app/uploads:/app/uploads
+        links:
+            - php-fpm
+    php-fpm:
+        image: mww-php
+        read_only: true
+        volumes:
+            - ../app/uploads:/app/uploads
