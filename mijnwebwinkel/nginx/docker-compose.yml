@@ -22,3 +22,7 @@ services:
         read_only: true
         volumes:
             - ../app/uploads:/app/uploads:rw
+        tmpfs:
+          - /tmp
+          - /run/lock
+          - /var/run
