@@ -19,6 +19,8 @@ spec:
             - containerport: 9000
           volumemounts: 
             - mountpath: /app/upload
+              # I need to replace hostpath with the PersistentVolumeClaim
+              # name: mww-pvc
               name: app-upload_hostpath
         - name: mww-nginx
           image: jonamade/mww-nginx:sandwich-sre-ningx 
@@ -26,9 +28,13 @@ spec:
             - containerport: 80
           volumemounts:
             - mountpath: /app/upload
+              # I need to replace hostpath with the PersistentVolumeClaim
+              # name: mww-pvc   
               name: app-upload_hostpath
       volumes: 
         # I'm setting a hostpath here because I'm running it local at this point, and I should change this. 
+        # when I set the PersistentVolumeClaim I have to remove every hostPath entry!!!
+        # name: mww-pvc   
         name: app-upload_hostpath
         hostPath:
           path: /System/Volumes/Data/mnt/nfs_src
