@@ -1,19 +1,19 @@
 kind: Deployment # this is a deployment. service will be in other yaml
 apiVersion: apps/v1
 metadata: 
-  name: php-fpm-nginx # name of the deployment
+  name: php-fpm # name of the deployment
 spec:
   selector: 
     matchLabels: 
-      app: mww-php-fpm-nginx
+      app: php-fpm
   replicas: 1 
   template: 
     metadata: 
       labels:
-        app: mww-php-fpm-nginx
+        app: php-fpm
     spec: 
       containers: # I should set the two containers here
-        - name: mww-php-fpm 
+        - name: php-fpm 
           image: jonamade/mww-php:sandwich-sre-php
           resources:
             limits:
@@ -26,9 +26,29 @@ spec:
           - containerPort: 9000
           volumeMounts: 
           - name: mww-pvclaim
-            mountPath: /app/upload
+            mountPath: /app/uploads
+      volumes:
+      - name: mww-pvclaim
+        persistentVolumeClaim:
+          claimName: mww-pvc
+---
+kind: Deployment # this is a deployment. service will be in other yaml
+apiVersion: apps/v1
+metadata: 
+  name: php-nginx # name of the deployment
+spec:
+  selector: 
+    matchLabels: 
+      app: mww-nginx
+  replicas: 1 
+  template: 
+    metadata: 
+      labels:
+        app: mww-nginx
+    spec: 
+      containers:
         - name: mww-nginx
-          image: jonamade/mww-nginx:sandwich-sre-ningx 
+          image: jonamade/mww-nginx:sandwich-sre-nginx
           resources:
             limits:
               memory: 512Mi
@@ -40,7 +60,7 @@ spec:
           - containerPort: 80
           volumeMounts:
           - name: mww-pvclaim
-            mountPath: /app/upload
+            mountPath: /app/uploads
       volumes:
       - name: mww-pvclaim
         persistentVolumeClaim:
