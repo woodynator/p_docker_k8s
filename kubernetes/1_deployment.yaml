@@ -1,0 +1,35 @@
+kind: Dx  eployment # this is a deployment. service will be in other yaml
+apiversion: apps/v1
+metadata: 
+  name: PHP FPM nginx # name of the deployment
+spec:
+  selector: 
+    matchlabels: 
+      app: mww-php-fpm
+  replicas: 1 
+  template: 
+    metadata: 
+      labels:
+        app: php-fpm-nginx
+    spec: 
+      containers: # I should set the two containers here
+        - name: mww-php-fpm 
+          image: jonamade/mww-php:sandwich-sre-php
+          ports:
+            - containerport: 9000
+          volumemounts: 
+            - mountpath: /app/upload
+              name: app-upload_hostpath
+        - name: mww-nginx
+          image: jonamade/mww-nginx:sandwich-sre-ningx 
+          ports:
+            - containerport: 80
+          volumemounts:
+            - mountpath: /app/upload
+              name: app-upload_hostpath
+      volumes: 
+        # I'm setting a hostpath here because I'm running it local at this point, and I should change this. 
+        name: app-upload_hostpath
+        hostPath:
+          path: /System/Volumes/Data/mnt/nfs_src
+          type: directory
