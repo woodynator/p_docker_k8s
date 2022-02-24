@@ -1,41 +1,47 @@
-kind: Dx  eployment # this is a deployment. service will be in other yaml
-apiversion: apps/v1
+kind: Deployment # this is a deployment. service will be in other yaml
+apiVersion: apps/v1
 metadata: 
-  name: PHP FPM nginx # name of the deployment
+  name: php-fpm-nginx # name of the deployment
 spec:
   selector: 
-    matchlabels: 
-      app: mww-php-fpm
+    matchLabels: 
+      app: mww-php-fpm-nginx
   replicas: 1 
   template: 
     metadata: 
       labels:
-        app: php-fpm-nginx
+        app: mww-php-fpm-nginx
     spec: 
       containers: # I should set the two containers here
         - name: mww-php-fpm 
           image: jonamade/mww-php:sandwich-sre-php
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
           ports:
-            - containerport: 9000
-          volumemounts: 
-            - mountpath: /app/upload
-              # I need to replace hostpath with the PersistentVolumeClaim
-              # name: mww-pvc
-              name: app-upload_hostpath
+          - containerPort: 9000
+          volumeMounts: 
+          - name: mww-pvclaim
+            mountPath: /app/upload
         - name: mww-nginx
           image: jonamade/mww-nginx:sandwich-sre-ningx 
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
           ports:
-            - containerport: 80
-          volumemounts:
-            - mountpath: /app/upload
-              # I need to replace hostpath with the PersistentVolumeClaim
-              # name: mww-pvc   
-              name: app-upload_hostpath
-      volumes: 
-        # I'm setting a hostpath here because I'm running it local at this point, and I should change this. 
-        # when I set the PersistentVolumeClaim I have to remove every hostPath entry!!!
-        # name: mww-pvc   
-        name: app-upload_hostpath
-        hostPath:
-          path: /System/Volumes/Data/mnt/nfs_src
-          type: directory
+          - containerPort: 80
+          volumeMounts:
+          - name: mww-pvclaim
+            mountPath: /app/upload
+      volumes:
+      - name: mww-pvclaim
+        persistentVolumeClaim:
+          claimName: mww-pvc

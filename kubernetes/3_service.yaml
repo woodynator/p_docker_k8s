@@ -1,5 +1,5 @@
-kind: service # this is the service for the deployment. I'm exposing port 80 of the nginx container to port 8123
-apiversion: v1
+kind: Service # this is the service for the deployment. I'm exposing port 80 of the nginx container to port 8123
+apiVersion: v1
 metadata: 
   name: mww-nginx
 spec:
@@ -7,4 +7,4 @@ spec:
     app: mww-nginx
   ports:
     - port: 8123
-      targetport: 80
+      targetPort: 80
